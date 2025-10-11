@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VINACE - Luxury Timepieces</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background: #000;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Menu Button */
+        .menu-btn {
+            position: fixed;
+            top: 30px;
+            left: 40px;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            z-index: 1001;
+            background: none;
+            border: none;
+            padding: 0;
+        }
+
+        .menu-btn span {
+            display: block;
+            width: 30px;
+            height: 2px;
+            background: #fff;
+            margin: 6px 0;
+            transition: all 0.3s ease;
+        }
+
+        .menu-btn.active span:nth-child(1) {
+            transform: rotate(45deg) translate(8px, 8px);
+        }
+
+        .menu-btn.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .menu-btn.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -7px);
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -350px;
+            width: 350px;
+            height: 100vh;
+            background: #0a0a0a;
+            z-index: 1000;
+            transition: left 0.4s ease;
+            padding-top: 100px;
+        }
+
+        .sidebar.active {
+            left: 0;
+        }
+
+        .sidebar nav ul {
+            list-style: none;
+        }
+
+        .sidebar nav a {
+            display: block;
+            padding: 20px 40px;
+            color: #fff;
+            text-decoration: none;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar nav a:hover {
+            padding-left: 50px;
+            background: #1a1a1a;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Logo */
+        .logo-container {
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 900;
+            font-size: 2rem;
+            font-weight: 300;
+            letter-spacing: 8px;
+            color: #fff;
+        }
+
+        .logo-text {
+            display: inline-block;
+            opacity: 0;
+            animation: fadeIn 0.5s forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        .logo-text:nth-child(1) { animation-delay: 0.2s; }
+        .logo-text:nth-child(2) { animation-delay: 0.4s; }
+        .logo-text:nth-child(3) { animation-delay: 1s; }
+        .logo-text:nth-child(4) { animation-delay: 1.2s; }
+        .logo-text:nth-child(5) { animation-delay: 1.4s; }
+        .logo-text:nth-child(6) { animation-delay: 1.6s; }
+
+        /* Page Container */
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .video-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            max-width: 900px;
+        }
+
+        .video-container video {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 20px 60px rgba(255, 255, 255, 0.1);
+        }
+
+        /* About Section */
+        .about {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 100px 50px;
+        }
+
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            max-width: 1200px;
+            width: 100%;
+            align-items: center;
+        }
+
+        .about-image {
+            width: 100%;
+            height: 500px;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .about-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .about-text h2 {
+            font-size: 3rem;
+            font-weight: 300;
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+        }
+
+        .about-text p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #bbb;
+            margin-bottom: 20px;
+        }
+
+        /* Collection Section */
+        .collection {
+            min-height: 100vh;
+            padding: 100px 50px;
+        }
+
+        .collection h2 {
+            text-align: center;
+            font-size: 3rem;
+            font-weight: 300;
+            margin-bottom: 80px;
+            letter-spacing: 2px;
+        }
+
+        .collection-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .watch-card {
+            background: #0a0a0a;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .watch-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .watch-image {
+            width: 100%;
+            height: 400px;
+            background: #1a1a1a;
+            overflow: hidden;
+        }
+
+        .watch-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .watch-info {
+            padding: 30px;
+            text-align: center;
+        }
+
+        .watch-info h3 {
+            font-size: 1.5rem;
+            font-weight: 300;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+        }
+
+        .see-more-btn {
+            display: inline-block;
+            padding: 15px 50px;
+            background: transparent;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            border: 2px solid #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .see-more-btn:hover {
+            background: #fff;
+            color: #000;
+        }
+
+        /* Watch Detail Page */
+        .watch-detail {
+            min-height: 100vh;
+            padding: 120px 50px 50px;
+        }
+
+        .detail-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 100px 1fr 400px;
+            gap: 40px;
+            align-items: start;
+        }
+
+        /* Thumbnail Sidebar */
+        .thumbnail-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .thumbnail {
+            width: 100px;
+            height: 100px;
+            background: #1a1a1a;
+            border: 2px solid transparent;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .thumbnail:hover, .thumbnail.active {
+            border-color: #fff;
+        }
+
+        .thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Main Image Gallery */
+        .main-gallery {
+            position: relative;
+            background: #0a0a0a;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .gallery-container {
+            position: relative;
+            width: 100%;
+            height: 600px;
+            background: #1a1a1a;
+        }
+
+        .gallery-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: none;
+        }
+
+        .gallery-image.active {
+            display: block;
+        }
+
+        .gallery-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: #fff;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .gallery-arrow:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .gallery-arrow.prev {
+            left: 20px;
+        }
+
+        .gallery-arrow.next {
+            right: 20px;
+        }
+
+        /* Watch Info Sidebar */
+        .watch-info-sidebar {
+            padding: 30px;
+            background: #0a0a0a;
+            border-radius: 8px;
+        }
+
+        .watch-info-sidebar h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+        }
+
+        .watch-description {
+            color: #bbb;
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+
+        .watch-features {
+            margin-bottom: 40px;
+        }
+
+        .watch-features h3 {
+            font-size: 1.2rem;
+            font-weight: 300;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+
+        .feature-item {
+            padding: 10px 0;
+            border-bottom: 1px solid #1a1a1a;
+            color: #bbb;
+        }
+
+        .inquire-btn {
+            display: block;
+            width: 100%;
+            padding: 18px;
+            background: #fff;
+            color: #000;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 2px solid #fff;
+        }
+
+        .inquire-btn:hover {
+            background: transparent;
+            color: #fff;
+        }
+
+        /* Contact Section */
+        .contact {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 120px 50px 50px;
+        }
+
+        .contact-container {
+            max-width: 700px;
+            width: 100%;
+        }
+
+        .contact h2 {
+            text-align: center;
+            font-size: 3rem;
+            font-weight: 300;
+            margin-bottom: 50px;
+            letter-spacing: 2px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: #bbb;
+            letter-spacing: 1px;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 15px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #fff;
+        }
+
+        textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 18px;
+            background: #fff;
+            color: #000;
+            border: 2px solid #fff;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background: transparent;
+            color: #fff;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .detail-container {
+                grid-template-columns: 1fr;
+            }
+
+            .thumbnail-sidebar {
+                flex-direction: row;
+                order: 2;
+            }
+
+            .main-gallery {
+                order: 1;
+            }
+
+            .watch-info-sidebar {
+                order: 3;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .about-content {
+                grid-template-columns: 1fr;
+            }
+
+            .collection-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .menu-btn {
+                left: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Menu Button -->
+    <button class="menu-btn" id="menuBtn">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+
+    <!-- Logo -->
+    <div class="logo-container">
+        <span class="logo-text">V</span>
+        <span class="logo-text">I</span>
+        <span class="logo-text">N</span>
+        <span class="logo-text">A</span>
+        <span class="logo-text">C</span>
+        <span class="logo-text">E</span>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <nav>
+            <ul>
+                <li><a href="#" data-page="home">Home</a></li>
+                <li><a href="#" data-page="about">About</a></li>
+                <li><a href="#" data-page="collection">Collection</a></li>
+                <li><a href="#" data-page="contact">Contact</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Overlay -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Main Page -->
+    <div class="page active" id="home">
+        <!-- Hero -->
+        <section class="hero">
+            <div class="video-container">
+                <!-- Option 1: Regular video file -->
+                <!-- <video autoplay muted loop playsinline>
+                    <source src="watch-video.mp4" type="video/mp4">
+                </video> -->
+                
+                <!-- Option 2: Instagram Embed -->
+                <!-- Replace the URL below with your Instagram post URL -->
+                <blockquote class="instagram-media" data-instgrm-permalink="YOUR_INSTAGRAM_POST_URL_HERE" data-instgrm-version="14" style="background:#000; border:0; border-radius:3px; box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15); margin: 1px; max-width:540px; min-width:326px; padding:0; width:99.375%; width:-webkit-calc(100% - 2px); width:calc(100% - 2px);">
+                </blockquote>
+            </div>
+        </section>
+    </div>
+
+    <!-- About Page -->
+    <div class="page" id="about">
+        <section class="about">
+            <div class="about-content">
+                <div class="about-image">
+                    <img src="IMG_9766.jpg" alt="VINACE Watch">
+                </div>
+                <div class="about-text">
+                    <h2>About Us</h2>
+                    <p>VINACE represents the pinnacle of modern watchmaking, where timeless craftsmanship meets contemporary design. Each timepiece is meticulously engineered to deliver exceptional precision and enduring elegance.</p>
+                    <p>Our collection embodies sophistication for those who appreciate the finer details in life. From boardrooms to city streets, VINACE watches are crafted for individuals who demand excellence in every moment.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Collection Page -->
+    <div class="page" id="collection">
+        <section class="collection">
+            <h2>Our Collection</h2>
+            <div class="collection-grid">
+                <div class="watch-card">
+                    <div class="watch-image">
+                        <img src="IMG_9765.jpg" alt="Classic Steel Watch">
+                    </div>
+                    <div class="watch-info">
+                        <h3>CLASSIC STEEL</h3>
+                        <button class="see-more-btn" onclick="showWatchDetail('watch1')">SEE MORE</button>
+                    </div>
+                </div>
+                <div class="watch-card">
+                    <div class="watch-image">
+                        <img src="IMG_9764.jpg" alt="Midnight Blue Watch">
+                    </div>
+                    <div class="watch-info">
+                        <h3>MIDNIGHT BLUE</h3>
+                        <button class="see-more-btn" onclick="showWatchDetail('watch2')">SEE MORE</button>
+                    </div>
+                </div>
+                <div class="watch-card">
+                    <div class="watch-image">
+                        <img src="watch3-main.jpg" alt="Gold Edition Watch">
+                    </div>
+                    <div class="watch-info">
+                        <h3>GOLD EDITION</h3>
+                        <button class="see-more-btn" onclick="showWatchDetail('watch3')">SEE MORE</button>
+                    </div>
+                </div>
+                <div class="watch-card">
+                    <div class="watch-image">
+                        <img src="watch4-main.jpg" alt="Sport Black Watch">
+                    </div>
+                    <div class="watch-info">
+                        <h3>SPORT BLACK</h3>
+                        <button class="see-more-btn" onclick="showWatchDetail('watch4')">SEE MORE</button>
+                    </div>
+                </div>
+                <div class="watch-card">
+                    <div class="watch-image">
+                        <img src="watch5-main.jpg" alt="Silver Elite Watch">
+                    </div>
+                    <div class="watch-info">
+                        <h3>SILVER ELITE</h3>
+                        <button class="see-more-btn" onclick="showWatchDetail('watch5')">SEE MORE</button>
+                    </div>
+                </div>
+                <div class="watch-card">
+                    <div class="watch-image">
+                        <img src="watch6-main.jpg" alt="Rose Gold Watch">
+                    </div>
+                    <div class="watch-info">
+                        <h3>ROSE GOLD</h3>
+                        <button class="see-more-btn" onclick="showWatchDetail('watch6')">SEE MORE</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Watch Detail Pages -->
+    <div class="page" id="watch1-detail">
+        <section class="watch-detail">
+            <div class="detail-container">
+                <div class="thumbnail-sidebar">
+                    <div class="thumbnail active" onclick="changeImage(0, 'watch1')">
+                        <img src="watch1-img1.jpg" alt="Thumbnail 1">
+                    </div>
+                    <div class="thumbnail" onclick="changeImage(1, 'watch1')">
+                        <img src="watch1-img2.jpg" alt="Thumbnail 2">
+                    </div>
+                    <div class="thumbnail" onclick="changeImage(2, 'watch1')">
+                        <img src="watch1-img3.jpg" alt="Thumbnail 3">
+                    </div>
+                    <div class="thumbnail" onclick="changeImage(3, 'watch1')">
+                        <img src="watch1-img4.jpg" alt="Thumbnail 4">
+                    </div>
+                </div>
+                <div class="main-gallery">
+                    <div class="gallery-container">
+                        <img src="watch1-img1.jpg" class="gallery-image active" alt="Watch Image 1">
+                        <img src="watch1-img2.jpg" class="gallery-image" alt="Watch Image 2">
+                        <img src="watch1-img3.jpg" class="gallery-image" alt="Watch Image 3">
+                        <img src="watch1-img4.jpg" class="gallery-image" alt="Watch Image 4">
+                    </div>
+                    <button class="gallery-arrow prev" onclick="prevImage('watch1')">‹</button>
+                    <button class="gallery-arrow next" onclick="nextImage('watch1')">›</button>
+                </div>
+                <div class="watch-info-sidebar">
+                    <h1>CLASSIC STEEL</h1>
+                    <p class="watch-description">
+                        The Classic Steel embodies timeless sophistication with its minimalist design and impeccable craftsmanship. Featuring a brushed stainless steel case and a sleek black dial, this timepiece is perfect for any occasion.
+                    </p>
+                    <div class="watch-features">
+                        <h3>Features</h3>
+                        <div class="feature-item">Stainless Steel Case - 42mm</div>
+                        <div class="feature-item">Swiss Automatic Movement</div>
+                        <div class="feature-item">Sapphire Crystal Glass</div>
+                        <div class="feature-item">Water Resistant - 100m</div>
+                        <div class="feature-item">Premium Leather Strap</div>
+                    </div>
+                    <a href="#" class="inquire-btn" onclick="showPage('contact')">INQUIRE NOW</a>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Additional watch detail pages (watch2-6) would follow the same structure -->
+    <div class="page" id="watch2-detail">
+        <section class="watch-detail">
+            <div class="detail-container">
+                <div class="thumbnail-sidebar">
+                    <div class="thumbnail active" onclick="changeImage(0, 'watch2')">
+                        <img src="IMG_9764.jpg" alt="Thumbnail 1">
+                    </div>
+                    <div class="thumbnail" onclick="changeImage(1, 'watch2')">
+                        <img src="watch2-img2.jpg" alt="Thumbnail 2">
+                    </div>
+                    <div class="thumbnail" onclick="changeImage(2, 'watch2')">
+                        <img src="watch2-img3.jpg" alt="Thumbnail 3">
+                    </div>
+                    <div class="thumbnail" onclick="changeImage(3, 'watch2')">
+                        <img src="watch2-img4.jpg" alt="Thumbnail 4">
+                    </div>
+                </div>
+                <div class="main-gallery">
+                    <div class="gallery-container">
+                        <img src="IMG_9764.jpg" class="gallery-image active" alt="Watch Image 1">
+                        <img src="watch2-img2.jpg" class="gallery-image" alt="Watch Image 2">
+                        <img src="watch2-img3.jpg" class="gallery-image" alt="Watch Image 3">
+                        <img src="watch2-img4.jpg" class="gallery-image" alt="Watch Image 4">
+                    </div>
+                    <button class="gallery-arrow prev" onclick="prevImage('watch2')">‹</button>
+                    <button class="gallery-arrow next" onclick="nextImage('watch2')">›</button>
+                </div>
+                <div class="watch-info-sidebar">
+                    <h1>MIDNIGHT BLUE</h1>
+                    <p class="watch-description">
+                        Experience luxury with the Midnight Blue. Its stunning gradient blue dial captures light beautifully, while the precision engineering ensures accuracy and reliability for years to come.
+                    </p>
+                    <div class="watch-features">
+                        <h3>Features</h3>
+                        <div class="feature-item">Titanium Case - 40mm</div>
+                        <div class="feature-item">Automatic Movement</div>
+                        <div class="feature-item">Gradient Blue Dial</div>
+                        <div class="feature-item">Water Resistant - 200m</div>
+                        <div class="feature-item">Rubber Sport Strap</div>
+                    </div>
+                    <a href="#" class="inquire-btn" onclick="showPage('contact')">INQUIRE NOW</a>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Contact Page -->
+    <div class="page" id="contact">
+        <section class="contact">
+            <div class="contact-container">
+                <h2>Contact Us</h2>
+                <form id="contactForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="firstName">First Name *</label>
+                            <input type="text" id="firstName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">Last Name *</label>
+                            <input type="text" id="lastName" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address *</label>
+                        <input type="email" id="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone Number *</label>
+                        <input type="tel" id="phone" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea id="message" placeholder="Tell us about the watch you're interested in..."></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn">SEND MESSAGE</button>
+                </form>
+            </div>
+        </section>
+    </div>
+
+    <!-- Instagram Embed Script -->
+    <script async src="//www.instagram.com/embed.js"></script>
+
+    <script>
+        const currentImages = {
+            watch1: 0,
+            watch2: 0
+        };
+
+        // Menu Toggle
+        const menuBtn = document.getElementById('menuBtn');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+
+        menuBtn.addEventListener('click', () => {
+            menuBtn.classList.toggle('active');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        });
+
+        overlay.addEventListener('click', () => {
+            menuBtn.classList.remove('active');
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+        });
+
+        // Page Navigation
+        function showPage(pageName) {
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => page.classList.remove('active'));
+            
+            const targetPage = document.getElementById(pageName);
+            if (targetPage) {
+                targetPage.classList.add('active');
+            }
+
+            // Close menu
+            menuBtn.classList.remove('active');
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        // Sidebar navigation
+        document.querySelectorAll('.sidebar a').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const page = link.getAttribute('data-page');
+                showPage(page);
+            });
+        });
+
+        // Show watch detail
+        function showWatchDetail(watchId) {
+            showPage(watchId + '-detail');
+        }
+
+        // Image gallery navigation
+        function changeImage(index, watchId) {
+            const page = document.getElementById(watchId + '-detail');
+            const images = page.querySelectorAll('.gallery-image');
+            const thumbnails = page.querySelectorAll('.thumbnail');
+
+            images.forEach(img => img.classList.remove('active'));
+            thumbnails.forEach(thumb => thumb.classList.remove('active'));
+
+            images[index].classList.add('active');
+            thumbnails[index].classList.add('active');
+
+            currentImages[watchId] = index;
+        }
+
+        function nextImage(watchId) {
+            const page = document.getElementById(watchId + '-detail');
+            const images = page.querySelectorAll('.gallery-image');
+            let current = currentImages[watchId];
+            current = (current + 1) % images.length;
+            changeImage(current, watchId);
+        }
+
+        function prevImage(watchId) {
+            const page = document.getElementById(watchId + '-detail');
+            const images = page.querySelectorAll('.gallery-image');
+            let current = currentImages[watchId];
+            current = (current - 1 + images.length) % images.length;
+            changeImage(current, watchId);
+        }
+
+        // Form submission
+        document.getElementById('contactForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Thank you for your inquiry! We will contact you shortly.');
+            e.target.reset();
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                menuBtn.classList.remove('active');
+                sidebar.classList.remove('active');
+                overlay.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
